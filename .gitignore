@@ -1,0 +1,13 @@
+Newspaper
+prothomalo_2017.csv
+prothomalo_2017_2.csv
+words.txt
+words_stem.txt
+words_stem_reverse_value.txt
+double_metaphone_encoded_word_list.txt
+news.txt
+output.txt
+word2vec_300_5.model
+word2vec_300_5.model.trainables.syn1neg.npy
+word2vec_300_5.model.wv.vectors.npy
+
