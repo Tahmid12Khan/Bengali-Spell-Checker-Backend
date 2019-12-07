@@ -5,25 +5,12 @@ from confusion_set import *
 from phonetic_encoder import doublemetaphone_encode, soundex_encode
 
 import nltk
-priority = 0.8
-
-def score(similarity, word, candidate):
-    ds = nltk.edit_distance(word, candidate)
-    if is_sounds_same(word, candidate):
-        ds = 0
-    return priority * similarity + (1-priority) * (2 - ds);
 
 def get_valid_context(words, word_index, left_count, right_count):
     
     list = words[max(word_index - left_count, 0): word_index] + words[word_index + 1: word_index + 1 + right_count]
     
     return [valid_word for valid_word in list if valid_word in w2v.wv.vocab]
-
-def is_sounds_same(word, candidate):
-    try:
-        return doublemetaphone_encode(word) == doublemetaphone_encode(candidate)
-    except:
-        return False
 
 def test(test_input, output):
     global total_word, word_correct, sentence_correct, total_sentence, write, true_true, true_false, false_true, false_false, yep, nope
@@ -35,28 +22,35 @@ def test(test_input, output):
         total_word += 1
         context = get_valid_context(input_words, index, 2, 2)
         suggestions = []
-        print(word)
-        print(candidates(word))
+#        print(word)
+#        print(candidates(word))
         for candidate in candidates(word):
             suggestions.append((score(w2v.wv.n_similarity([candidate], context), word, candidate), candidate))
         
         suggestions.sort(reverse = True)
         
         scores = [suggestion[-2] for suggestion in suggestions[:5]]
-        suggestions = [suggestion[-1] for suggestion in suggestions[:5]]
+        #todo delete later
+        t_s = [suggestion[-1] for suggestion in suggestions[:50]]
+        suggestions = valid_bengali_words([suggestion[-1] for suggestion in suggestions[:50]])
+        t_s = suggestions[:5]
+        suggestions = suggestions[:5]
+#        print('Suggestions', suggestions)
         
         #todo delete
 #        if word in suggestions:
 #            suggestions = [word]
         
-        if output_words[index] not in suggestions:            
-#            print('Suggestion ' +  str(suggestions) + '\n')
-#            print('Scores ' + str(scores) + '\n')
-#            print('Current Score: ' + str( score(w2v.wv.n_similarity([candidate], context), word, word)) + '\n')
-#            print('Error for ' + str(test_input) +  '->' + str(output) + '\n')
-#            print('Did not find valid suggestion at ' + str(index) + ' for ' + str(output_words[index]) + '\n')
+        if output_words[index] not in suggestions: 
+            
+            print('Suggestion ' +  str(t_s) + '\n')
+            print('Scores ' + str(scores) + '\n')
+            print('Current Score: ' + str( score(w2v.wv.n_similarity([candidate], context), word, word)) + '\n')
+            print('Error for ' + str(test_input) +  '->' + str(output) + '\n')
+            print('Did not find valid suggestion at ' + str(index) + ' for ' + str(output_words[index]) + '\n')
 #            write.write('------------------------------------------------------'+ '\n')
             correct = False
+#            inp = input('Waiting for an input: ')
             if word == output_words[index]:
                 true_false += 1
             else:
@@ -120,7 +114,7 @@ def test_this():
     yep = 0
     nope = 0
 
-    for i in range(0, 1):
+    for i in range(0, len(arr)):
         print('Processing ', i + 1, ' Sentences')
         test_input, output = arr[i].split('>')
         try:

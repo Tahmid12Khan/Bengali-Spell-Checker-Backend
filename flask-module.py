@@ -3,23 +3,10 @@ from confusion_set import *
 from phonetic_encoder import doublemetaphone_encode, soundex_encode
 from flask import Flask, request, redirect, url_for, flash, jsonify
 app = Flask(__name__)
-import nltk
-priority = 0.6
-
-def score(similarity, word, candidate):
-    ds = nltk.edit_distance(word, candidate)
-    if is_sounds_same(word, candidate):
-        ds = 0
-    return priority * similarity + (1-priority) * (2 - ds);
 
 def get_valid_context_words(context_words):
     return [valid_word for valid_word in context_words if valid_word in w2v.wv.vocab]
 
-def is_sounds_same(word, candidate):
-    try:
-        return doublemetaphone_encode(word) == doublemetaphone_encode(candidate)
-    except:
-        return False
 
 def get_suggestions(word, context_words):
     context_words = get_valid_context_words(context_words)
@@ -28,13 +15,14 @@ def get_suggestions(word, context_words):
         suggestions.append((score(w2v.wv.n_similarity([candidate], context_words), word, candidate), candidate))
     suggestions.sort(reverse = True)
     top_five_score = [suggestion[0] for suggestion in suggestions[:5]]
-
-    top_five_suggestions = [suggestion[1] for suggestion in suggestions[:5]]
+    top_five_suggestions = [suggestion[1] for suggestion in suggestions[:50]]
+    top_five_suggestions = valid_bengali_words(top_five_suggestions)
+    top_five_suggestions = top_five_suggestions[:5]
     print(top_five_score)
     print(top_five_suggestions)
     if word not in top_five_suggestions:
         return top_five_suggestions
-    return []
+    return top_five_suggestions;
 
 def valid_bengali_letters(char):
     return ord(char) >= 2433 and ord(char) <= 2543
@@ -62,13 +50,19 @@ def test():
 
 
 def temp(data):
-    my_suggestions = get_suggestions(data['word'], data['contexts'])
+    my_suggestions = []
     response = {}
-    response['status'] = 'success'
+#    try:
+    my_suggestions = get_suggestions(data['word'], data['contexts'])
+#    except:
+#        response['status'] = 'fail'
+#        response['suggestions'] = []
+#        return response
+    response['status'] = 'fail'
     response['suggestions'] = []
     if len(my_suggestions) == 0:
         return response
-    response['status'] = 'error'
+    response['status'] = 'fail'
 
     response['suggestions'] = my_suggestions
     print(response)
