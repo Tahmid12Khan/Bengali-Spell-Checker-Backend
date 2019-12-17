@@ -11,4 +11,8 @@ word2vec_300_5.model
 word2vec_300_5.model.trainables.syn1neg.npy
 word2vec_300_5.model.wv.vectors.npy
 .idea
-
+venv
+build
+dist
+required
+test.exe

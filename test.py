@@ -29,14 +29,19 @@ def test(test_input, output):
         
         suggestions.sort(reverse = True)
         
-        scores = [suggestion[-2] for suggestion in suggestions[:5]]
+        scores = [suggestion for suggestion in suggestions[:50]]
         #todo delete later
         t_s = [suggestion[-1] for suggestion in suggestions[:50]]
         suggestions = valid_bengali_words([suggestion[-1] for suggestion in suggestions[:50]])
         t_s = suggestions[:5]
         suggestions = suggestions[:5]
+        _scores = []
+        for suggestion in suggestions:
+            for _score in scores:
+                if _score[-1] == suggestion:
+                    _scores.append(_score)
 #        print('Suggestions', suggestions)
-        
+        scores = _scores
         #todo delete
 #        if word in suggestions:
 #            suggestions = [word]
@@ -44,8 +49,14 @@ def test(test_input, output):
         if output_words[index] not in suggestions: 
             
             print('Suggestion ' +  str(t_s) + '\n')
-            print('Scores ' + str(scores) + '\n')
-            print('Current Score: ' + str( score(w2v.wv.n_similarity([candidate], context), word, word)) + '\n')
+            print('Scores ')
+            print(scores)
+            try:
+                print('Current Score: ' + word + ' '  + str( score(w2v.wv.n_similarity([word], context), word, word)) + '\n')
+                print('Output Score:'  + output_words[index] + ' '  + str( score(w2v.wv.n_similarity([output_words[index]], context), word, word)) + '\n')
+                print('Phonetically Same? ', is_sounds_same(output_words[index], word))
+            except Exception as e:
+                print(e)
             print('Error for ' + str(test_input) +  '->' + str(output) + '\n')
             print('Did not find valid suggestion at ' + str(index) + ' for ' + str(output_words[index]) + '\n')
 #            write.write('------------------------------------------------------'+ '\n')
@@ -114,7 +125,7 @@ def test_this():
     yep = 0
     nope = 0
 
-    for i in range(0, len(arr)):
+    for i in range(0, 20):
         print('Processing ', i + 1, ' Sentences')
         test_input, output = arr[i].split('>')
         try:
@@ -139,7 +150,7 @@ def test_this():
     print(false_true, '\t', false_false)
     #print(nltk.edit_distance('অন্য', 'অহ্ন'))
 test_this()
-candidates('যে')
+len(candidates('ভণ্ড'))
 doublemetaphone_encode('যে')
 #candidates('অন্ন')
 #print(soundex_encode('অন্য'))

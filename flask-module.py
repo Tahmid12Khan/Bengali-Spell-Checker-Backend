@@ -14,11 +14,11 @@ def get_suggestions(word, context_words):
     for candidate in candidates(word):
         suggestions.append((score(w2v.wv.n_similarity([candidate], context_words), word, candidate), candidate))
     suggestions.sort(reverse = True)
-    top_five_score = [suggestion[0] for suggestion in suggestions[:5]]
-    top_five_suggestions = [suggestion[1] for suggestion in suggestions[:50]]
+#    top_five_score = [suggestion[0] for suggestion in suggestions[:5]]
+    top_five_suggestions = [suggestion[1] for suggestion in suggestions[:100]]
     top_five_suggestions = valid_bengali_words(top_five_suggestions)
     top_five_suggestions = top_five_suggestions[:5]
-    print(top_five_score)
+#    print(top_five_score)
     print(top_five_suggestions)
     if word not in top_five_suggestions:
         return top_five_suggestions
